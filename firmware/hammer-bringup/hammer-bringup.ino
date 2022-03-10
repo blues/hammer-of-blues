@@ -6,12 +6,16 @@
 #include <Adafruit_BME280.h>
 #include <Adafruit_LIS3DH.h>
 #include <IRremote.hpp>
+#include <Adafruit_NeoPixel.h>
 #include "pitches.h"
 
 #define BUTTON_PIN     A2
 #define BUZZER_PIN     A0
 #define IR_SEND_PIN    D13
 #define IR_RECEIVE_PIN D9
+#define NEOPIXEL_PIN   A1
+
+#define NUM_PIXELS 2
 
 #define SCREEN_ADDRESS 0x3C
 #define BME280_ADDRESS 0x76
@@ -31,6 +35,7 @@ ButtonDebounce button(BUTTON_PIN, 200); // PIN D0 with 2500ms debounce time
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 Adafruit_BME280 bmeSensor;
 Adafruit_LIS3DH lisSensor = Adafruit_LIS3DH();
+Adafruit_NeoPixel pixels(NUM_PIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   Serial.begin(115200);
@@ -67,6 +72,8 @@ void setup() {
 
   IrSender.begin(IR_SEND_PIN, ENABLE_LED_FEEDBACK);
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+
+  pixels.begin();
 
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
@@ -140,6 +147,13 @@ void loop() {
     } else if (IrReceiver.decodedIRData.command == 0x11) {
       Serial.println("IR Signal received, but it's not from our emitter...");
     }
+  }
+
+  pixels.clear();
+
+  for(int i=0; i<NUM_PIXELS; i++) {
+    pixels.setPixelColor(i, pixels.Color(0, 0, 150));
+    pixels.show();
   }
 
   delay(5000);

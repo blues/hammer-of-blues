@@ -10,7 +10,7 @@
 #define SCREEN_ADDRESS 0x3C
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
-#define NEOPIXEL_PIN  A1
+#define NEOPIXEL_PIN A1
 
 #define NUM_PIXELS 2
 
@@ -29,7 +29,8 @@ unsigned long startMillis;
 unsigned long currentMillis;
 const unsigned long period = 360000;
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   delay(2500);
   Serial.println("Hammer of Blues");
@@ -47,9 +48,11 @@ void setup() {
   JAddStringToObject(req, "mode", "continuous");
   notecard.sendRequest(req);
 
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
+  {
     Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
+    for (;;)
+      ; // Don't proceed, loop forever
   }
   Serial.println("Screen Connected");
 
@@ -58,18 +61,22 @@ void setup() {
 
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0,0);
+  display.setCursor(0, 0);
   display.println(F("Hammer of Blues!"));
   display.display();
 
   unsigned bmeStatus = bmeSensor.begin(BME280_I2C_ADDRESS, &Wire);
-  if (!bmeStatus) {
+  if (!bmeStatus)
+  {
     Serial.println("Could not find a valid BME280 sensor, check wiring, I2C address");
-  } else {
+  }
+  else
+  {
     Serial.println("BME280 Connected");
   }
 
-  if (!lisSensor.begin(LIS3DH_I2C_ADDRESS)) {
+  if (!lisSensor.begin(LIS3DH_I2C_ADDRESS))
+  {
     Serial.println("Could not find a valid LIS3DH Sensor, check wiring, I2C address");
   }
   Serial.println("LIS3DH Connected");
@@ -77,7 +84,7 @@ void setup() {
   pixels.begin();
   pixels.show();
 
-  theaterChase(pixels.Color(  0,   0, 255), 50); // Blue
+  theaterChase(pixels.Color(0, 0, 255), 50); // Blue
 
   digitalWrite(LED_BUILTIN, LOW);
 
@@ -85,16 +92,17 @@ void setup() {
   startMillis = millis();
 }
 
-void loop() {
+void loop()
+{
   currentMillis = millis();
 
-  //Clear the screen
+  // Clear the screen
   display.clearDisplay();
 
   // Read from Accel and Write to Screen
   lisSensor.setRange(LIS3DH_RANGE_8_G);
   lisSensor.read();
-  display.setCursor(0,0);
+  display.setCursor(0, 0);
   display.print("X: ");
   display.println(lisSensor.x);
   display.print("Y: ");
@@ -103,37 +111,44 @@ void loop() {
   display.println(lisSensor.z);
   display.display();
 
-  if (currentMillis - startMillis >= period) {
-    //Get current temp and humidity and send to Notecard
+  if (currentMillis - startMillis >= period)
+  {
+    // Get current temp and humidity and send to Notecard
     long temp = bmeSensor.readTemperature();
     long humidity = bmeSensor.readHumidity();
 
     J *req = notecard.newRequest("note.add");
-    if (req != NULL) {
-        JAddBoolToObject(req, "sync", true);
-        J *body = JCreateObject();
-        if (body != NULL) {
-            JAddNumberToObject(body, "temp", temp);
-            JAddNumberToObject(body, "humidity", humidity);
-            JAddItemToObject(req, "body", body);
-        }
-        notecard.sendRequest(req);
+    if (req != NULL)
+    {
+      JAddBoolToObject(req, "sync", true);
+      J *body = JCreateObject();
+      if (body != NULL)
+      {
+        JAddNumberToObject(body, "temp", temp);
+        JAddNumberToObject(body, "humidity", humidity);
+        JAddItemToObject(req, "body", body);
+      }
+      notecard.sendRequest(req);
     }
 
     startMillis = currentMillis;
   }
 }
 
-void theaterChase(uint32_t color, int wait) {
-  for(int a=0; a<10; a++) {  // Repeat 10 times...
-    for(int b=0; b<3; b++) { //  'b' counts from 0 to 2...
-      pixels.clear();         //   Set all pixels in RAM to 0 (off)
+void theaterChase(uint32_t color, int wait)
+{
+  for (int a = 0; a < 10; a++)
+  { // Repeat 10 times...
+    for (int b = 0; b < 3; b++)
+    {                 //  'b' counts from 0 to 2...
+      pixels.clear(); //   Set all pixels in RAM to 0 (off)
       // 'c' counts up from 'b' to end of strip in steps of 3...
-      for(int c=b; c<pixels.numPixels(); c += 3) {
+      for (int c = b; c < pixels.numPixels(); c += 3)
+      {
         pixels.setPixelColor(c, color); // Set pixel 'c' to value 'color'
       }
       pixels.show(); // Update strip with new contents
-      delay(wait);  // Pause for a moment
+      delay(wait);   // Pause for a moment
     }
   }
 }

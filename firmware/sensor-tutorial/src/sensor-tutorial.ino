@@ -28,7 +28,7 @@ const unsigned long period = 1000 * 60;
 void setup()
 {
   Serial.begin(115200);
-  delay(10000);
+  delay(20000); // time to get serial monitor open!
   Serial.println("===============");
   Serial.println("Hammer of Blues Sensor Tutorial!");
   Serial.println("===============");

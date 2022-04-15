@@ -10,8 +10,8 @@
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
 
-#define BME280_ADDRESS 0x76
-#define LIS3DH_ADDRESS 0x18
+#define BME280_I2C_ADDRESS 0x76
+#define LIS3DH_I2C_ADDRESS 0x18
 
 #define PRODUCT_UID "com.blues.bsatrom:hammer_of_blues"
 Notecard notecard;
@@ -29,7 +29,7 @@ void setup() {
   delay(2500);
   Serial.println("Hammer of Blues");
   Serial.println("===============");
-  
+
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
 
@@ -38,7 +38,7 @@ void setup() {
 
   J *req = notecard.newRequest("hub.set");
   JAddStringToObject(req, "product", PRODUCT_UID);
-  JAddStringToObject(req, "sn", "proto-hammer");
+  JAddStringToObject(req, "sn", "jank-hammer");
   JAddStringToObject(req, "mode", "continuous");
   notecard.sendRequest(req);
 
@@ -48,6 +48,7 @@ void setup() {
   }
   Serial.println("Screen Connected");
 
+  display.setRotation(2);
   display.clearDisplay();
 
   display.setTextSize(1);
@@ -56,18 +57,18 @@ void setup() {
   display.println(F("Hammer of Blues!"));
   display.display();
 
-  unsigned bmeStatus = bmeSensor.begin(BME280_ADDRESS, &Wire);  
+  unsigned bmeStatus = bmeSensor.begin(BME280_I2C_ADDRESS, &Wire);
   if (!bmeStatus) {
     Serial.println("Could not find a valid BME280 sensor, check wiring, I2C address");
   } else {
     Serial.println("BME280 Connected");
   }
 
-  if (!lisSensor.begin(LIS3DH_ADDRESS)) {
+  if (!lisSensor.begin(LIS3DH_I2C_ADDRESS)) {
     Serial.println("Could not find a valid LIS3DH Sensor, check wiring, I2C address");
   }
   Serial.println("LIS3DH Connected");
-  
+
   digitalWrite(LED_BUILTIN, LOW);
   startMillis = millis();
 }
@@ -76,12 +77,12 @@ void loop() {
   currentMillis = millis();
   if (currentMillis - startMillis >= period) {
     display.clearDisplay();
- 
+
     long temp = bmeSensor.readTemperature();
     long humidity = bmeSensor.readHumidity();
-    
+
     //Clear the screen
-    
+
     //Get current temp and humidity and send to Notecard
     //Display temp and HU to screen
     display.setCursor(0,10);
@@ -105,7 +106,7 @@ void loop() {
         }
         notecard.sendRequest(req);
     }
-    
+
     startMillis = currentMillis;
   }
 }

@@ -17,7 +17,7 @@
 #define BME280_I2C_ADDRESS 0x76
 #define LIS3DH_I2C_ADDRESS 0x18
 
-#define PRODUCT_UID "com.blues.bsatrom:hammer_of_blues"
+#define PRODUCT_UID "<your notehub productuid>"
 Notecard notecard;
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);

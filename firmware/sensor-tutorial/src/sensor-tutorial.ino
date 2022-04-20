@@ -15,7 +15,7 @@
 // pressure at the sea level in hectopascal (is equivalent to milibar)
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-#define PRODUCT_UID "com.blues.rlauer:hammer_of_blues"
+#define PRODUCT_UID "<your notehub productuid>"
 Notecard notecard;
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);

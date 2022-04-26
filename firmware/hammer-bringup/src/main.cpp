@@ -39,6 +39,38 @@ Adafruit_BME280 bmeSensor;
 Adafruit_LIS3DH lisSensor = Adafruit_LIS3DH();
 Adafruit_NeoPixel pixels(NUM_PIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
+void sideButtonChanged(const int state) {
+  if (state == 1) {
+    Serial.println("Button Verified: " + String(state));
+    digitalWrite(LED_BUILTIN, HIGH);
+  } else {
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+}
+
+void backButtonChanged(const int state) {
+  if (state == 0) {
+    Serial.println("Button Verified: " + String(state));
+    digitalWrite(LED_BUILTIN, HIGH);
+  } else {
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+}
+
+void theaterChase(uint32_t color, int wait) {
+  for(int a=0; a<10; a++) {  // Repeat 10 times...
+    for(int b=0; b<3; b++) { //  'b' counts from 0 to 2...
+      pixels.clear();         //   Set all pixels in RAM to 0 (off)
+      // 'c' counts up from 'b' to end of strip in steps of 3...
+      for(int c=b; c<pixels.numPixels(); c += 3) {
+        pixels.setPixelColor(c, color); // Set pixel 'c' to value 'color'
+      }
+      pixels.show(); // Update strip with new contents
+      delay(wait);  // Pause for a moment
+    }
+  }
+}
+
 void setup() {
   Serial.begin(115200);
   delay(2500);
@@ -169,36 +201,4 @@ void loop() {
 
   delay(5000);
   */
-}
-
-void sideButtonChanged(const int state) {
-  if (state == 1) {
-    Serial.println("Button Verified: " + String(state));
-    digitalWrite(LED_BUILTIN, HIGH);
-  } else {
-    digitalWrite(LED_BUILTIN, LOW);
-  }
-}
-
-void backButtonChanged(const int state) {
-  if (state == 0) {
-    Serial.println("Button Verified: " + String(state));
-    digitalWrite(LED_BUILTIN, HIGH);
-  } else {
-    digitalWrite(LED_BUILTIN, LOW);
-  }
-}
-
-void theaterChase(uint32_t color, int wait) {
-  for(int a=0; a<10; a++) {  // Repeat 10 times...
-    for(int b=0; b<3; b++) { //  'b' counts from 0 to 2...
-      pixels.clear();         //   Set all pixels in RAM to 0 (off)
-      // 'c' counts up from 'b' to end of strip in steps of 3...
-      for(int c=b; c<pixels.numPixels(); c += 3) {
-        pixels.setPixelColor(c, color); // Set pixel 'c' to value 'color'
-      }
-      pixels.show(); // Update strip with new contents
-      delay(wait);  // Pause for a moment
-    }
-  }
 }

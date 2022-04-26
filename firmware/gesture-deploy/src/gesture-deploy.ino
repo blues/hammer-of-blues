@@ -3,10 +3,29 @@
 #include <SPI.h>
 #include <Adafruit_LIS3DH.h>
 #include <Adafruit_Sensor.h>
+#include <Adafruit_NeoPixel.h>
+
+#define NEOPIXEL_PIN    A1
+#define NUM_PIXELS 2
 
 Adafruit_LIS3DH lis = Adafruit_LIS3DH();
+Adafruit_NeoPixel pixels(NUM_PIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 static bool debug_nn = false; // Set this to true to see e.g. features generated from the raw signal
+
+void theaterChase(uint32_t color, int wait) {
+  for(int a=0; a<10; a++) {  // Repeat 10 times...
+    for(int b=0; b<3; b++) { //  'b' counts from 0 to 2...
+      pixels.clear();         //   Set all pixels in RAM to 0 (off)
+      // 'c' counts up from 'b' to end of strip in steps of 3...
+      for(int c=b; c<pixels.numPixels(); c += 3) {
+        pixels.setPixelColor(c, color); // Set pixel 'c' to value 'color'
+      }
+      pixels.show(); // Update strip with new contents
+      delay(wait);  // Pause for a moment
+    }
+  }
+}
 
 void setup()
 {
@@ -26,6 +45,9 @@ void setup()
   }
   Serial.println("LIS3DH found!");
 
+  pixels.begin();
+  pixels.show();
+
   lis.setDataRate(LIS3DH_DATARATE_400_HZ);
 
   if (EI_CLASSIFIER_RAW_SAMPLES_PER_FRAME != 3)
@@ -33,6 +55,8 @@ void setup()
     ei_printf("ERR: EI_CLASSIFIER_RAW_SAMPLES_PER_FRAME should be equal to 3 (the 3 sensor axes)\n");
     return;
   }
+
+  theaterChase(pixels.Color(255,0,0), 50); // Red
 }
 
 void ei_printf(const char *format, ...)
@@ -118,8 +142,19 @@ void loop()
   }
 
   // print the predictions
+  String label = result.classification[predictionLabel].label;
+
   Serial.print("\nPrediction: ");
-  Serial.println(result.classification[predictionLabel].label);
+  Serial.println(label);
+
+  if (label == "idle") {
+    theaterChase(pixels.Color(0,255,0), 50); // Green
+  } else if (label == "chop") {
+    theaterChase(pixels.Color(255,0,0), 50); // Red
+  } else if (label == "circle") {
+    theaterChase(pixels.Color(0,0,255), 50); // Blue
+  }
+
 #if EI_CLASSIFIER_HAS_ANOMALY == 1
   Serial.print("    ");
   Serial.print("anomaly score: ");

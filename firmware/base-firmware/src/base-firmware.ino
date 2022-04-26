@@ -44,7 +44,6 @@ void setup()
 
   J *req = notecard.newRequest("hub.set");
   JAddStringToObject(req, "product", PRODUCT_UID);
-  JAddStringToObject(req, "sn", "jank-hammer");
   JAddStringToObject(req, "mode", "continuous");
   notecard.sendRequest(req);
 

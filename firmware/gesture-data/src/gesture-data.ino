@@ -1,101 +1,67 @@
 // Basic demo for accelerometer readings from Adafruit LIS3DH
 
-// NOTE! may have to use: edge-impulse-data-forwarder --frequency 400
-
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_LIS3DH.h>
 #include <Adafruit_Sensor.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
-// I2C
 Adafruit_LIS3DH lis = Adafruit_LIS3DH();
+
+#define SCREEN_ADDRESS 0x3C
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 32
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 void setup(void)
 {
   Serial.begin(115200);
-  while (!Serial)
-    delay(10); // will pause Zero, Leonardo, etc until serial console opens
-
-  Serial.println("LIS3DH test!");
 
   if (!lis.begin(0x18))
   { // change this to 0x19 for alternative i2c address
-    Serial.println("Couldnt start");
+    Serial.println("Couldn't start LIS3DH");
     while (1)
       yield();
   }
   Serial.println("LIS3DH found!");
 
-  // lis.setRange(LIS3DH_RANGE_4_G);   // 2, 4, 8 or 16 G!
-
-  Serial.print("Range = ");
-  Serial.print(2 << lis.getRange());
-  Serial.println("G");
-
-  lis.setDataRate(LIS3DH_DATARATE_400_HZ);
-  Serial.print("Data rate set to: ");
-  switch (lis.getDataRate())
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
   {
-  case LIS3DH_DATARATE_1_HZ:
-    Serial.println("1 Hz");
-    break;
-  case LIS3DH_DATARATE_10_HZ:
-    Serial.println("10 Hz");
-    break;
-  case LIS3DH_DATARATE_25_HZ:
-    Serial.println("25 Hz");
-    break;
-  case LIS3DH_DATARATE_50_HZ:
-    Serial.println("50 Hz");
-    break;
-  case LIS3DH_DATARATE_100_HZ:
-    Serial.println("100 Hz");
-    break;
-  case LIS3DH_DATARATE_200_HZ:
-    Serial.println("200 Hz");
-    break;
-  case LIS3DH_DATARATE_400_HZ:
-    Serial.println("400 Hz");
-    break;
-
-  case LIS3DH_DATARATE_POWERDOWN:
-    Serial.println("Powered Down");
-    break;
-  case LIS3DH_DATARATE_LOWPOWER_5KHZ:
-    Serial.println("5 Khz Low Power");
-    break;
-  case LIS3DH_DATARATE_LOWPOWER_1K6HZ:
-    Serial.println("16 Khz Low Power");
-    break;
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;)
+      ; // Don't proceed, loop forever
   }
+
+  display.clearDisplay();
+  display.setRotation(2);
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println(F("Screen Connected"));
+  display.display();
+  delay(2000);
 }
 
 void loop()
 {
-  lis.read(); // get X Y and Z data at once
-  // Then print out the raw data
-  // Serial.print("X:  ");
+  lis.read(); // get x,y,z data at once
   Serial.print(lis.x);
   Serial.print("\t");
   Serial.print(lis.y);
   Serial.print("\t");
   Serial.print(lis.z);
-
-  /* Or....get a new sensor event, normalized */
-  // sensors_event_t event;
-  // lis.getEvent(&event);
-
-  /* Display the results (acceleration is measured in m/s^2) */
-  // Serial.print("\t\tX: ");
-  // Serial.print(event.acceleration.x);
-  // Serial.print(" \tY: ");
-  // Serial.print(event.acceleration.y);
-  // Serial.print(" \tZ: ");
-  // Serial.print(event.acceleration.z);
-  // Serial.println(" m/s^2 ");
-
   Serial.println();
 
-  delay(200);
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.print("X: ");
+  display.println(lis.x);
+  display.print("Y: ");
+  display.println(lis.y);
+  display.print("Z: ");
+  display.println(lis.z);
+  display.display();
 }

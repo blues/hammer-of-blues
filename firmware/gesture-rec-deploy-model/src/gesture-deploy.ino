@@ -114,15 +114,15 @@ void loop()
     // engage neopixels!
     if (label == "idle")
     {
-        theaterChase(pixels.Color(0, 255, 0), 50); // Green
+        theaterChase(pixels.Color(255, 0, 0), 50); // Green (GRB)
     }
     else if (label == "chop")
     {
-        theaterChase(pixels.Color(255, 0, 0), 50); // Red
+        theaterChase(pixels.Color(0, 255, 0), 50); // Red (GRB)
     }
     else if (label == "wave")
     {
-        theaterChase(pixels.Color(0, 0, 255), 50); // Blue
+        theaterChase(pixels.Color(0, 0, 255), 50); // Blue (GRB)
     }
 
 #if EI_CLASSIFIER_HAS_ANOMALY == 1

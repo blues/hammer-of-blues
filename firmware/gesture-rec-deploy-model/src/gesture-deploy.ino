@@ -1,4 +1,4 @@
-#include <Arduino.h> // if using PlatformIO
+#include <Arduino.h>
 #include <Adafruit_LIS3DH.h>
 #include <Adafruit_NeoPixel.h>
 #include <Hammer_XL_inferencing.h> // replace this with reference to YOUR model
